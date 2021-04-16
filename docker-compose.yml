@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+    graphql:
+        build:
+            context: .
+        ports:
+            - '54711:54711'
+        environment:
+            - PORT=54711
+        networks:
+            - shokkoth-universe
+
+networks:
+    shokkoth-universe:
+        external:
+            name: shokkoth-universe
