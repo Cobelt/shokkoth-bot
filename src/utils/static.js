@@ -49,6 +49,12 @@ export const toURLValid = memoize(string =>
     toLowerCaseNFC(removeAccent(string).replace(/\W+/g, '-'))
 )
 
+export const capitalize = memoize(string =>
+    string && typeof string === 'string'
+        ? string?.charAt(0)?.toUpperCase() + string?.slice(1, string?.length)
+        : string
+)
+
 export const translateType = (type, translations, lang) => {
     const validType = toURLValid(type)
 

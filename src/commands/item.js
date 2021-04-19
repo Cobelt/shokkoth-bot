@@ -1,46 +1,47 @@
 import axios from 'axios'
 
-import { MUTATIONS } from '../graphql'
+import { QUERIES } from '../graphql'
 import * as MESSAGES from '../messages'
 
 import { deleteShortlyAfter, getHeaders } from '../utils'
 
 export async function run(client, message, args) {
     try {
-        if (message?.channel?.type !== 'dm') {
-            message.delete()
-        }
-
-        const headers = getHeaders(client, message)
-        if (!headers) {
-            return message
-                .reply(MESSAGES.COMMON.notConnected({ client, message }))
-                .then(deleteShortlyAfter)
-        }
-
-        const _link = args?.[0]
-        const link = link?.match(/^<?(?<link>.*)>?$/)?.groups?.link || _link
-
-        if (!link) {
+        if (args?.length < 1) {
             return message
                 .reply(
-                    MESSAGES.COMMON.error({
+                    MESSAGES.ITEM.wrongFormat({
                         client,
-                        customMessage:
-                            'Tu dois mettre un lien vers un stuff DB',
+                        customMessage: `Erreur :\n${errors
+                            ?.map(error => error?.message)
+                            ?.join('\n')}`,
                     })
                 )
                 .then(deleteShortlyAfter)
         }
 
+        const headers = getHeaders(client, message)
+
         const { data: { data, errors } = {} } = await axios.post(
             process.env.GRAPHQL_URI,
             {
-                query: MUTATIONS.IMPORT_STUFF,
-                variables: { link },
+                query: QUERIES.SEARCH_EQUIPMENT,
+                variables: {
+                    searchName: args
+                        .filter(e => !!e)
+                        .join(' ')
+                        .trim(),
+                },
             },
             { headers }
         )
+
+        console.log({
+            searchName: args
+                .filter(e => !!e)
+                .join(' ')
+                .trim(),
+        })
 
         if (errors?.length > 0) {
             return message
@@ -55,17 +56,21 @@ export async function run(client, message, args) {
                 .then(deleteShortlyAfter)
         }
 
-        if (!data?.importStuff) {
-            return message
-                .reply(MESSAGES.COMMON.error({ client }))
-                .then(deleteShortlyAfter)
+        if (!data?.equipmentOne) {
+            return message.reply(
+                MESSAGES.COMMON.error({
+                    client,
+                    customMessage:
+                        'Aucun item trouvé, essaye une autre partie du nom ?',
+                })
+            )
         }
 
         return message.reply(
-            MESSAGES.STUFFS.get({
+            MESSAGES.ITEM.get({
                 client,
                 message,
-                data: data?.importStuff,
+                data: data?.equipmentOne,
             })
         )
     } catch (e) {

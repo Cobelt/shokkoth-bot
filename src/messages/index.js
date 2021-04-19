@@ -1,4 +1,5 @@
 export * as COMMON from './common'
+export * as ITEM from './item'
 export * as LOGIN from './login'
 export * as ME from './me'
 export * as MUTE from './mute'

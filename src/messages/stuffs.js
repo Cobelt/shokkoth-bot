@@ -1,5 +1,5 @@
 import Discord from 'discord.js'
-import { bot, getEmoji, getGuildColor } from '../utils'
+import { bot, capitalize, getEmoji, getGuildColor } from '../utils'
 
 import { EQUIPMENTS, STATS } from '../constants'
 
@@ -68,9 +68,7 @@ export function get({ client, message, args, data }) {
                 ? mappedAndSortedEquipments?.map(equipment => {
                       const name = equipment?.typeObj?.fr || ''
                       return {
-                          name:
-                              name?.charAt(0)?.toUpperCase() +
-                              name?.slice(1, name?.length),
+                          name: capitalize(name),
                           value: equipment?.name,
 
                           inline: true,

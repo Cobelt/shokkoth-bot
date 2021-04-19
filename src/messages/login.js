@@ -1,5 +1,5 @@
 import Discord from 'discord.js'
-import { getEmoji } from '../utils'
+import { bot, getEmoji } from '../utils'
 
 export function shouldRemoveMsg({ client, message, args } = {}) {
     const embed = new Discord.MessageEmbed()
@@ -7,6 +7,8 @@ export function shouldRemoveMsg({ client, message, args } = {}) {
         .setTitle(
             'Pense à bien supprimer le message de ta commande $login pour que des yeux baladeurs ne te volent pas ton mot de passe !'
         )
+        .setFooter(...bot(client))
+        .setTimestamp()
 
     return embed
 }
@@ -16,7 +18,7 @@ export function wrongFormat({ client, message, args } = {}) {
         .setColor('#0099ff')
         .setTitle('Le bon format de la commande est :')
         .setDescription('$login [username] [password]')
-        .setFooter(client?.user?.username, client?.user?.avatarURL)
+        .setFooter(...bot(client))
         .setTimestamp()
 
     if (message?.channel?.type !== 'dm') {
